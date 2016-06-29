@@ -1,2 +1,6 @@
 packages/
 paket.exe
+.fake/
+bin/
+obj/
+build/
