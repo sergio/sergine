@@ -34,6 +34,18 @@ Target "Test" (fun _ ->
         ToolPath = "./packages/NUnit.Runners/tools";
         ToolName = "nunit-console-x86.exe"
         DisableShadowCopy = true; 
+        ExcludeCategory = "Acceptance"; 
+        OutputFile = buildDir + "TestResults.xml";
+    })
+)
+
+Target "AcceptanceTest" (fun _ ->
+    !! (buildDir + "/*.Tests.dll")
+    |> NUnit (fun p -> 
+    {p with 
+        ToolPath = "./packages/NUnit.Runners/tools";
+        ToolName = "nunit-console-x86.exe"
+        DisableShadowCopy = true;
         OutputFile = buildDir + "TestResults.xml";
     })
 )

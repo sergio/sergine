@@ -12,6 +12,10 @@
         {
             "taskName": "Build",
             "args": ["Build"]
+        },
+        {
+            "taskName": "AcceptanceTest",
+            "args": ["AcceptanceTest"]
         }
     ]
 }
