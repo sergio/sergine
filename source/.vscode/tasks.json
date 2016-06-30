@@ -1,0 +1,17 @@
+{
+    "version": "0.1.0",
+    "command": "./build.sh",
+    "isShellCommand": true,
+    "showOutput": "always",
+    "tasks": [
+        {
+            "taskName": "Test",
+            "isBuildCommand": true,
+            "args": ["Test"]
+        },
+        {
+            "taskName": "Build",
+            "args": ["Build"]
+        }
+    ]
+}
