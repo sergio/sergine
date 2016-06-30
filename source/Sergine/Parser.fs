@@ -5,12 +5,10 @@ open FParsec.CharParsers
 open FParsec.Primitives
 
 let parseFen (fen : string) : Result<Position, string> =
-    let playerBetweenSpaces = spaces1 >>. (pchar 'w' <|> pchar 'b') .>> spaces1
+    let player = (charReturn 'w' White) <|> (charReturn 'b' Black) 
+    let playerBetweenSpaces = spaces1 >>. player .>> spaces1
     let pposition = many (skipAnyOf "pnbrqkPNBRQK12345678/") >>. playerBetweenSpaces
     let result = run pposition fen
     match result with
-    | Success (result, _, _) -> 
-        match result with
-        | 'w' -> Result.Success { PlayerInTurn = White }
-        | _ -> Result.Success { PlayerInTurn = Black }
+    | Success (result, _, _) -> Result.Success { PlayerInTurn = result } 
     | Failure (errorMessage, _, _) -> Result.Failure errorMessage 

@@ -23,4 +23,4 @@ let ``Parser returns error when player is not 'w' or 'b'`` () =
             match result with
             | Failure s -> true
             | _ -> false
-     @> 
+     @>
