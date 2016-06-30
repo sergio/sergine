@@ -27,6 +27,17 @@ Target "Build" (fun _ ->
         |> Log "AppBuild-Output: "
 )
 
+Target "Test" (fun _ ->
+    !! (buildDir + "/*.Tests.dll")
+    |> NUnit (fun p -> 
+    {p with 
+        ToolPath = "./packages/NUnit.Runners/tools";
+        ToolName = "nunit-console-x86.exe"
+        DisableShadowCopy = true; 
+        OutputFile = buildDir + "TestResults.xml";
+    })
+)
+
 Target "Deploy" (fun _ ->
     !! (buildDir + "/**/*.*")
         -- "*.zip"
@@ -36,6 +47,7 @@ Target "Deploy" (fun _ ->
 // Build order
 "Clean"
   ==> "Build"
+  ==> "Test"
   ==> "Deploy"
 
 // start build
