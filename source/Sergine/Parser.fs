@@ -102,24 +102,3 @@ let parseFen (fen : string) : Result<CommonTypes.Position, string> =
     match result with
     | Success (result, _, _) -> Result.Success result 
     | Failure (errorMessage, _, _) -> Result.Failure errorMessage 
-
-// Sub-parser testing functions
-
-let runSubparser<'TResult> (subparser:Parser<'TResult, unit>) (s: string) : Result<'TResult, string> =
-    let r = run (subparser .>> eof) s
-    match r with
-    | Success (result, _, _) -> Result.Success result
-    | Failure (msg, _, _) -> Result.Failure msg
-
-let parseTurn = runSubparser pturn
-
-let parseCastlings = runSubparser pCastlings
-
-let parseEnPassantTarget = runSubparser pEnPassantSquare
-
-let parsePiece = runSubparser ppiece
-
-let parseEmpties = runSubparser pempties
-
-let parseRank = runSubparser pRank 
-    
