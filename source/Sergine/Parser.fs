@@ -4,20 +4,15 @@ open System
 open CommonTypes
 open FParsec
 open FParsec.CharParsers
-open FParsec.Primitives
 
-// let parseFen (fen : string) : Result<Position, string> =
-//     let player = (charReturn 'w' White) <|> (charReturn 'b' Black) 
-//     let playerBetweenSpaces = spaces1 >>. player .>> spaces1
-//     let pposition = many (skipAnyOf "pnbrqkPNBRQK12345678/") >>. playerBetweenSpaces
-//     let result = run pposition fen
-//     match result with
-//     | Success (result, _, _) -> Result.Success { Turn = result } 
-//     | Failure (errorMessage, _, _) -> Result.Failure errorMessage 
+let blank : Parser<unit, unit> = skipChar ' '
 
-// Sub-parsers
+let pHalfmove = pint32
+
+let pFullMove = pint32
 
 let whitePlayer = charReturn 'w' White
+
 let blackPlayer = charReturn 'b' Black
 
 let pturn : Parser<Player, unit> = whitePlayer <|> blackPlayer  
@@ -75,6 +70,38 @@ let pRank : Parser<Piece option list, unit> =
                 Reply(FatalError, messageError ("There must be exactly 8 squares in a rank")) 
         else
             reply
+
+let pboard : Parser<Piece option list list, unit> = sepBy1 pRank (pchar '/') |>> List.rev
+
+let pipe6 p1 p2 p3 p4 p5 p6 f =
+    pipe4 p1 p2 p3 (tuple3 p4 p5 p6)
+          (fun x1 x2 x3 (x4, x5, x6) -> f x1 x2 x3 x4 x5 x6)    
+
+let pposition : Parser<CommonTypes.Position, unit> = 
+    let makePosition b t c p h f = {
+        Board = b;
+        Turn = t;
+        Castlings = c;
+        EnPassantTarget = p;
+        HalfmoveCounter = h;
+        FullmoveCounter = f
+    }
+    pipe6 
+        (pboard .>> blank) 
+        (pturn .>> blank) 
+        (pCastlings .>> blank) 
+        (pEnPassantSquare .>> blank) 
+        (pHalfmove .>> blank) 
+        pFullMove 
+        makePosition
+
+let parseFen (fen : string) : Result<CommonTypes.Position, string> =
+    let player = (charReturn 'w' White) <|> (charReturn 'b' Black) 
+    let playerBetweenSpaces = spaces1 >>. player .>> spaces1
+    let result = run pposition fen
+    match result with
+    | Success (result, _, _) -> Result.Success result 
+    | Failure (errorMessage, _, _) -> Result.Failure errorMessage 
 
 // Sub-parser testing functions
 

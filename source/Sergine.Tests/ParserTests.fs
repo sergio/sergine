@@ -130,3 +130,29 @@ module ``When parsing board contents`` =
         ]
         test <@ result = Success expected @>
         
+module ``When parsing complete FEN string`` =
+
+    [<Test>]
+    let ``returns correct value for starting position`` () =
+        let a p k = Some { Player = p; Kind = k}
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        let position = parseFen fen
+        let expected = {
+            Board = [ [(a White Rook); (a White Knight); (a White Bishop); (a White Queen); (a White King); (a White Bishop); (a White Knight); (a White Rook)];
+                      (a White Pawn) |> List.replicate 8;
+                      None |> List.replicate 8;
+                      None |> List.replicate 8;
+                      None |> List.replicate 8;
+                      None |> List.replicate 8;
+                      (a Black Pawn) |> List.replicate 8;
+                      [(a Black Rook); (a Black Knight); (a Black Bishop); (a Black Queen); (a Black King); (a Black Bishop); (a Black Knight); (a Black Rook)] ]
+            Turn = White;
+            Castlings = [ { Player = White; Side = Kingside}; 
+                          { Player = White; Side = Queenside};
+                          { Player = Black; Side = Kingside};
+                          { Player = Black; Side = Queenside} ];
+            EnPassantTarget = None;
+            HalfmoveCounter = 0;
+            FullmoveCounter = 1
+        }
+        test <@ position = Success expected @>
