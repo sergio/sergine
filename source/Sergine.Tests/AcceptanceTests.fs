@@ -1,6 +1,7 @@
 module AcceptanceTests
 
 open Sergine
+open CommonTypes
 open NUnit.Framework
 open Swensen.Unquote
 
@@ -15,4 +16,7 @@ let ``Engine suggests a valid move for white as the best move for the start posi
 
     let suggestedMove = Engine.bestMoveForPosition START_POSITION_FEN
 
-    test <@ Seq.exists ((=) suggestedMove) validMovesForWhite @>
+    test <@ match suggestedMove with
+            | Success m -> Seq.exists ((=) m) validMovesForWhite
+            | Failure _ -> false 
+         @>
