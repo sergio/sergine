@@ -105,39 +105,21 @@ let parseFen (fen : string) : Result<CommonTypes.Position, string> =
 
 // Sub-parser testing functions
 
-let parseTurn (s : string) : Result<Player, string> = 
-    let r = run (pturn .>> eof) s
-    match r with
-    | Success (player, _, _) -> Result.Success player
-    | Failure (msg, _, _) -> Result.Failure msg
-
-let parseCastlings (s: string) : Result<AvailableCastling list, string> =
-    let r = run (pCastlings .>> eof) s
-    match r with
-    | Success (castlings, _, _) -> Result.Success castlings
-    | Failure (msg, _, _) -> Result.Failure msg
-
-let parseEnPassantTarget (s: string) : Result<Coordinate option, string> =
-    let r = run (pEnPassantSquare .>> eof) s
-    match r with
-    | Success (player, _, _) -> Result.Success player
-    | Failure (msg, _, _) -> Result.Failure msg
-
-let parsePiece (s:string) : Result<Piece, string> =
-    let r = run (ppiece .>> eof) s
-    match r with
-    | Success (piece, _, _) -> Result.Success piece
-    | Failure (msg, _, _) -> Result.Failure msg
-
-let parseEmpties (s:string) : Result<Piece option list, string> =
-    let r = run (pempties .>> eof) s
+let runSubparser<'TResult> (subparser:Parser<'TResult, unit>) (s: string) : Result<'TResult, string> =
+    let r = run (subparser .>> eof) s
     match r with
     | Success (result, _, _) -> Result.Success result
     | Failure (msg, _, _) -> Result.Failure msg
 
-let parseRank (s:string) : Result<Piece option list, string> = 
-    let r = run (pRank .>> eof) s
-    match r with
-    | Success (result, _, _) -> Result.Success result
-    | Failure (msg, _, _) -> Result.Failure msg
+let parseTurn = runSubparser pturn
+
+let parseCastlings = runSubparser pCastlings
+
+let parseEnPassantTarget = runSubparser pEnPassantSquare
+
+let parsePiece = runSubparser ppiece
+
+let parseEmpties = runSubparser pempties
+
+let parseRank = runSubparser pRank 
     
