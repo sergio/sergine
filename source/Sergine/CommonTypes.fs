@@ -8,7 +8,7 @@ type Piece = { Player : Player; Kind: PieceKind }
 type Square = Piece option
 type CastlingSide = | Queenside | Kingside 
 type AvailableCastling = { Player: Player; Side: CastlingSide }
-type Coordinate = String
+type Coordinate = int * int
 type Position = {
     Board: Piece option list list;
     Turn: Player;

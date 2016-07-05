@@ -56,3 +56,20 @@ module ``When parsing castling options`` =
     let ``returns error if unknown input`` () =
         let result = parseCastlings "QkA"
         test <@ isParsingFailure result @>
+
+module ``When parsing en passant capture target square`` =
+
+    [<Test>]
+    let ``returns None for '-'`` () =
+        let result = parseEnPassantTarget "-"
+        test <@ result = Success None @>
+
+    [<Test>]
+    let ``returns correct coordinate for 'a1'`` () =
+        let result = parseEnPassantTarget "a1"
+        test <@ result = Success (Some (0, 0)) @>
+
+    [<Test>]
+    let ``returns correct coordinate for 'h8'`` () =
+        let result = parseEnPassantTarget "h8"
+        test <@ result = Success (Some (7, 7)) @>

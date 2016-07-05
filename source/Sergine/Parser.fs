@@ -30,6 +30,18 @@ let pCastlings : Parser<AvailableCastling list, unit> =
         )
     )
 
+let pRankNumber : Parser<int, unit> =
+    anyOf "12345678" |>> (fun c -> int(c) - int('1'))
+
+let pFileLetter : Parser<int, unit> =
+    anyOf "abcdefgh" |>> (fun c -> int(c) - int('a'))
+
+let pSquare : Parser<Coordinate, unit> =
+    pFileLetter .>>. pRankNumber
+
+let pEnPassantSquare : Parser<Coordinate option, unit> =
+    (charReturn '-' None) <|> (pSquare |>> Some)
+
 // Sub-parser testing functions
 
 let parseTurn (s : string) : Result<Player, string> = 
@@ -43,3 +55,10 @@ let parseCastlings (s: string) : Result<AvailableCastling list, string> =
     match r with
     | Success (castlings, _, _) -> Result.Success castlings
     | Failure (msg, _, _) -> Result.Failure msg
+
+let parseEnPassantTarget (s: string) : Result<Coordinate option, string> =
+    let r = run (pEnPassantSquare .>> eof) s
+    match r with
+    | Success (player, _, _) -> Result.Success player
+    | Failure (msg, _, _) -> Result.Failure msg
+    
