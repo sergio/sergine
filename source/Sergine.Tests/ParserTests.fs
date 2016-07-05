@@ -42,12 +42,11 @@ module ``When parsing castling options`` =
     [<Test>]
     let ``returns all options for 'QKqk'`` () =
         let result = parseCastlings "QKqk"
-        let expectedCastlings = Set.ofList [
-                                            {Player = White; Side = Queenside};
-                                            {Player = Black; Side = Queenside};
-                                            {Player = White; Side = Kingside};
-                                            {Player = Black; Side = Kingside}
-                                           ]
+        let expectedCastlings =
+            Set.ofList [ {Player = White; Side = Queenside};
+                         {Player = Black; Side = Queenside};
+                         {Player = White; Side = Kingside};
+                         {Player = Black; Side = Kingside} ]
         test <@ match result with
                 | Success castlings -> castlings |> Set.ofList = expectedCastlings
                 | Failure _ -> false @>
@@ -73,3 +72,61 @@ module ``When parsing en passant capture target square`` =
     let ``returns correct coordinate for 'h8'`` () =
         let result = parseEnPassantTarget "h8"
         test <@ result = Success (Some (7, 7)) @>
+
+module ``When parsing board contents`` =
+
+    [<Test>]
+    let ``returns Black Rook for 'r'`` () =
+        let result = parsePiece "r"
+        test <@ result = Success { Player = Black; Kind = Rook } @>
+
+    [<Test>]
+    let ``returns White Knight for 'N'`` () =
+        let result = parsePiece "N"
+        test <@ result = Success { Player = White; Kind = Knight } @>
+
+    [<Test>]
+    let ``returns error for unknown pieces`` () =
+        let result = parsePiece "J"
+        test <@ isParsingFailure result @>
+
+    [<Test>]
+    let ``returns sequence of 8 empty squares for '8'`` () =
+        let result = parseEmpties "8"
+        test <@ result = Success (None |> List.replicate 8) @>
+
+    [<Test>]
+    let ``returns sequence of 3 empty squares for '3'`` () =
+        let result = parseEmpties "3"
+        test <@ result = Success (None |> List.replicate 3) @>
+
+    [<Test>]
+    let ``returns failure for more than 8 empty squares`` () =
+        let result = parseEmpties "9"
+        test <@ isParsingFailure result @>
+
+    [<Test>]
+    let ``returns failure for more than 8 pieces in a rank`` () =
+        let result = parseRank "ppppppppp"
+        test <@ isParsingFailure result @>
+    
+    [<Test>]
+    let ``returns failure for less than 8 pieces in a rank`` () =
+        let result = parseRank "pp2"
+        test <@ isParsingFailure result @>
+
+    [<Test>]
+    let ``returns correct combination of pieces for 'PpP2Kq1'`` () =
+        let result = parseRank "PpP2Kq1"
+        let expected = [
+            Some { Player = White; Kind = Pawn };
+            Some { Player = Black; Kind = Pawn };
+            Some { Player = White; Kind = Pawn };
+            None;
+            None;
+            Some { Player = White; Kind = King };
+            Some { Player = Black; Kind = Queen };
+            None;
+        ]
+        test <@ result = Success expected @>
+        
