@@ -4,3 +4,4 @@ paket.exe
 bin/
 obj/
 build/
+temp/
