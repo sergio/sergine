@@ -49,3 +49,44 @@ module ``Rook movement`` =
                 |> Set.ofList
             
             test <@ actualMoves = expectedMoves @>
+
+module ``Bishop movement`` =
+
+    module ``When board is empty`` =
+        [<Test>]
+        let ``Returns correct moves from e3`` () =
+
+            let piece = { Player = White; Kind = Bishop }
+
+            let board_stub square =
+                match alg square with
+                | "e3" -> Some piece
+                | _ -> None
+
+            let actualMoves = availableMovesForPiece board_stub (coord "e3") piece
+
+            let expectedMoves = 
+                ["c1";"d2";"f4";"g5";"h6";"a7";"b6";"c5";"d4";"f2";"g1"]
+                |> List.map (fun target -> Move.create piece (coord "e3") (coord target))
+                |> Set.ofList
+            
+            test <@ actualMoves = expectedMoves @>
+
+        [<Test>]
+        let ``Returns correct moves from h8`` () =
+
+            let piece = { Player = White; Kind = Bishop }
+
+            let board_stub square =
+                match alg square with
+                | "h8" -> Some piece
+                | _ -> None
+
+            let actualMoves = availableMovesForPiece board_stub (coord "h8") piece
+
+            let expectedMoves = 
+                ["a1";"b2";"c3";"d4";"e5";"f6";"g7"]
+                |> List.map (fun target -> Move.create piece (coord "h8") (coord target))
+                |> Set.ofList
+            
+            test <@ actualMoves = expectedMoves @>
