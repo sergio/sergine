@@ -49,7 +49,7 @@ let private availableMovesInDirection isEmptySquare square piece counter movepre
     |> Seq.filter movepredicate
     |> List.ofSeq
 
-let availableMovesFromSquare (pieceAt:Coordinate -> Piece option) square : Set<Move> =
+let availableMovesFromSquare (pieceAt:Coordinate -> Piece option) (enPassantTarget:Coordinate option) square : Set<Move> =
 
     let unlimited = Seq.initInfinite
 
@@ -64,7 +64,10 @@ let availableMovesFromSquare (pieceAt:Coordinate -> Piece option) square : Set<M
             | None -> false 
 
     let targetIsEnPassantTarget : MovePredicate =
-        fun move -> move.Target = (3,5)
+        fun move ->
+            match enPassantTarget with
+            | None -> false 
+            | Some square -> move.Target = square 
 
     let targetSquareIsEmpty : MovePredicate =
         fun move -> isEmptySquare move.Target  
