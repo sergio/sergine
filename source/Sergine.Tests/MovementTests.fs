@@ -10,7 +10,7 @@ let alg = Algebraic.ofCoordinate
 let at = ()
 let a player kind at square = (square, { Player = player; Kind = kind})
 
-let movesToTargetSquares sourceSquare piece targetSquares =
+let movesToTargetSquares (sourceSquare, piece) targetSquares =
     targetSquares
     |> List.map (fun target -> Move.create piece (coord sourceSquare) (coord target))
     |> Set.ofList
@@ -33,14 +33,14 @@ module ``Rook movement`` =
         let ``Returns correct moves from e3`` () =
             let square, piece = a White Rook at "e3"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["e1"; "e2"; "e4"; "e5"; "e6"; "e7"; "e8"; "a3"; "b3"; "c3"; "d3"; "f3"; "g3"; "h3"] 
+            let expectedMoves = movesToTargetSquares (square, piece) ["e1"; "e2"; "e4"; "e5"; "e6"; "e7"; "e8"; "a3"; "b3"; "c3"; "d3"; "f3"; "g3"; "h3"] 
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Returns correct moves from h8`` () =
             let square, piece = a White Rook at "h8"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["h7";"h6";"h5";"h4";"h3";"h2";"h1";"g8";"f8";"e8";"d8";"c8";"b8";"a8"]
+            let expectedMoves = movesToTargetSquares (square, piece) ["h7";"h6";"h5";"h4";"h3";"h2";"h1";"g8";"f8";"e8";"d8";"c8";"b8";"a8"]
             test <@ actualMoves = expectedMoves @>
 
     module ``When other piece in movement range`` = 
@@ -75,14 +75,14 @@ module ``Bishop movement`` =
         let ``Returns correct moves from e3`` () =
             let square, piece = a White Bishop at "e3"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["c1";"d2";"f4";"g5";"h6";"a7";"b6";"c5";"d4";"f2";"g1"]
+            let expectedMoves = movesToTargetSquares (square, piece) ["c1";"d2";"f4";"g5";"h6";"a7";"b6";"c5";"d4";"f2";"g1"]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Returns correct moves from h8`` () =
             let square, piece = a White Bishop at "h8"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["a1";"b2";"c3";"d4";"e5";"f6";"g7"]
+            let expectedMoves = movesToTargetSquares (square, piece) ["a1";"b2";"c3";"d4";"e5";"f6";"g7"]
             test <@ actualMoves = expectedMoves @>
 
     module ``When other piece in movement range`` = 
@@ -117,14 +117,14 @@ module ``Queen movement`` =
         let ``Returns correct moves from e3`` () =
             let square, piece = a White Queen at "e3"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece (["c1";"d2";"f4";"g5";"h6";"a7";"b6";"c5";"d4";"f2";"g1"] @ ["e1"; "e2"; "e4"; "e5"; "e6"; "e7"; "e8"; "a3"; "b3"; "c3"; "d3"; "f3"; "g3"; "h3"])
+            let expectedMoves = movesToTargetSquares (square, piece) (["c1";"d2";"f4";"g5";"h6";"a7";"b6";"c5";"d4";"f2";"g1"] @ ["e1"; "e2"; "e4"; "e5"; "e6"; "e7"; "e8"; "a3"; "b3"; "c3"; "d3"; "f3"; "g3"; "h3"])
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Returns correct moves from h8`` () =
             let square, piece = a White Queen at "h8"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece (["a1";"b2";"c3";"d4";"e5";"f6";"g7"] @ ["h7";"h6";"h5";"h4";"h3";"h2";"h1";"g8";"f8";"e8";"d8";"c8";"b8";"a8"])
+            let expectedMoves = movesToTargetSquares (square, piece) (["a1";"b2";"c3";"d4";"e5";"f6";"g7"] @ ["h7";"h6";"h5";"h4";"h3";"h2";"h1";"g8";"f8";"e8";"d8";"c8";"b8";"a8"])
             test <@ actualMoves = expectedMoves @>
 
 module ``Knight movement`` =
@@ -134,14 +134,14 @@ module ``Knight movement`` =
         let ``Returns correct moves from e4`` () =
             let square, piece = a White Knight at "e4"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["d2";"d6";"f2";"f6";"c3";"c5";"g3";"g5"]
+            let expectedMoves = movesToTargetSquares (square, piece) ["d2";"d6";"f2";"f6";"c3";"c5";"g3";"g5"]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Returns correct moves from g7`` () =
             let square, piece = a White Knight at "g7"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["f5";"h5";"e6";"e8";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["f5";"h5";"e6";"e8";]
             test <@ actualMoves = expectedMoves @>
 
     module ``When other piece in movement range`` =
@@ -168,14 +168,14 @@ module ``King movement`` =
         let ``Returns correct moves from e3`` () =
             let square, piece = a White King at "e3"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["d2";"e2";"f2";"d3";"f3";"d4";"e4";"f4";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["d2";"e2";"f2";"d3";"f3";"d4";"e4";"f4";]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Returns correct moves from h8`` () =
             let square, piece = a White King at "h8"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["h7";"g8";"g7";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["h7";"g8";"g7";]
             test <@ actualMoves = expectedMoves @>
 
     module ``When other piece in movement range`` =
@@ -202,28 +202,28 @@ module ``Pawn movement`` =
         let ``White pawn can move 2 squares from start position`` () =
             let square, piece = a White Pawn at "b2"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["b3";"b4"]
+            let expectedMoves = movesToTargetSquares (square, piece) ["b3";"b4"]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``White pawn can move only 1 square if not in start position`` () =
             let square, piece = a White Pawn at "f4"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["f5";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["f5";]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Black pawn can move 2 squares from start position`` () =
             let square, piece = a Black Pawn at "b7"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["b6";"b5"]
+            let expectedMoves = movesToTargetSquares (square, piece) ["b6";"b5"]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
         let ``Black pawn can move only 1 square if not in start position`` () =
             let square, piece = a Black Pawn at "f4"
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["f3";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["f3";]
             test <@ actualMoves = expectedMoves @>
 
     module ``When pawn is blocked`` = 
@@ -248,7 +248,7 @@ module ``Pawn movement`` =
             let square, piece = a White Pawn at "e3"
             let board = boardWithPieces [square, piece; a Black Bishop at "f4"; a Black Bishop at "d4"]
             let actualMoves = availableMovesFromSquare board None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["e4";"f4";"d4";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["e4";"f4";"d4";]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
@@ -256,7 +256,7 @@ module ``Pawn movement`` =
             let square, piece = a White Pawn at "e3"
             let board = boardWithPieces [square, piece; a White Bishop at "f4"; a White Bishop at "d4"]
             let actualMoves = availableMovesFromSquare board None (coord square)
-            let expectedMoves = movesToTargetSquares square piece ["e4";]
+            let expectedMoves = movesToTargetSquares (square, piece) ["e4";]
             test <@ actualMoves = expectedMoves @>
 
         [<Test>]
