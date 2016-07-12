@@ -49,7 +49,7 @@ let private availableMovesInDirection isEmptySquare square piece counter movepre
     |> Seq.filter movepredicate
     |> List.ofSeq
 
-let availableMovesForPiece (pieceAt:Coordinate -> Piece option) square piece : Set<Move> =
+let availableMovesFromSquare (pieceAt:Coordinate -> Piece option) square : Set<Move> =
 
     let unlimited = Seq.initInfinite
 
@@ -71,22 +71,25 @@ let availableMovesForPiece (pieceAt:Coordinate -> Piece option) square piece : S
 
     let isEmptyOrCapture : MovePredicate = targetSquareIsEmpty <||> targetSquareIsEnemyPiece
 
-    let recipe = 
-        match piece.Kind with 
-        | Rook -> [(Dirs.HORIZVERT, unlimited, isEmptyOrCapture)]
-        | Bishop -> [(Dirs.DIAGONAL, unlimited, isEmptyOrCapture)]
-        | Queen -> [(Dirs.ALL, unlimited, isEmptyOrCapture)]
-        | King -> [(Dirs.ALL, upto 1, isEmptyOrCapture)]
-        | Knight -> [(Dirs.KNIGHT, upto 1, isEmptyOrCapture)]
-        | Pawn -> 
-            let allowedDistance = if (isPawnInStartPosition square piece) then 2 else 1
-            [([Dirs.NORTH], upto allowedDistance, targetSquareIsEmpty)]
-          @ [([Dirs.NE; Dirs.NW], upto 1, targetSquareIsEnemyPiece <||> targetIsEnPassantTarget)]
-    recipe 
-    |> List.map (fun (directions, counter, movePredicate) ->
-                directions 
-                |> Dirs.relativeTo piece.Player 
-                |> List.map (availableMovesInDirection isEmptySquare square piece counter movePredicate)
-                |> List.concat)
-    |> List.concat
-    |> Set.ofList
+    match pieceAt square with
+    | Some piece ->
+        let recipe = 
+            match piece.Kind with 
+            | Rook -> [(Dirs.HORIZVERT, unlimited, isEmptyOrCapture)]
+            | Bishop -> [(Dirs.DIAGONAL, unlimited, isEmptyOrCapture)]
+            | Queen -> [(Dirs.ALL, unlimited, isEmptyOrCapture)]
+            | King -> [(Dirs.ALL, upto 1, isEmptyOrCapture)]
+            | Knight -> [(Dirs.KNIGHT, upto 1, isEmptyOrCapture)]
+            | Pawn -> 
+                let allowedDistance = if (isPawnInStartPosition square piece) then 2 else 1
+                [([Dirs.NORTH], upto allowedDistance, targetSquareIsEmpty)]
+            @ [([Dirs.NE; Dirs.NW], upto 1, targetSquareIsEnemyPiece <||> targetIsEnPassantTarget)]
+        recipe 
+        |> List.map (fun (directions, counter, movePredicate) ->
+                    directions 
+                    |> Dirs.relativeTo piece.Player 
+                    |> List.map (availableMovesInDirection isEmptySquare square piece counter movePredicate)
+                    |> List.concat)
+        |> List.concat
+        |> Set.ofList
+    | None -> Set.empty
