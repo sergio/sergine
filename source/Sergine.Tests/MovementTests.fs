@@ -43,6 +43,31 @@ module ``Rook movement`` =
             let expectedMoves = movesToTargetSquares square piece ["h7";"h6";"h5";"h4";"h3";"h2";"h1";"g8";"f8";"e8";"d8";"c8";"b8";"a8"]
             test <@ actualMoves = expectedMoves @>
 
+    module ``When other piece in movement range`` = 
+        [<Test>]
+        let ``Cannot move to square blocked by same color piece`` () =
+            let square, piece = a White Rook at "a1"
+            let board = boardWithPieces [square, piece; a White Knight at "a3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let wrongMove = Move.create piece (coord square) (coord "a3")
+            test <@ Set.contains wrongMove actualMoves = false  @>
+
+        [<Test>]
+        let ``Can capture an enemy piece if there are no pieces between them`` () =
+            let square, piece = a White Rook at "a1"
+            let board = boardWithPieces [square, piece; a Black Knight at "a3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let captureMove = Move.create piece (coord square) (coord "a3")
+            test <@ Set.contains captureMove actualMoves = true  @>
+
+        [<Test>]
+        let ``Cannot capture an enemy piece if there are pieces between them`` () =
+            let square, piece = a White Rook at "a1"
+            let board = boardWithPieces [square, piece; a White Bishop at "a2"; a Black Knight at "a3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let wrongMove = Move.create piece (coord square) (coord "a3")
+            test <@ Set.contains wrongMove actualMoves = false  @>
+
 module ``Bishop movement`` =
 
     module ``When board is empty`` =
@@ -59,6 +84,31 @@ module ``Bishop movement`` =
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) (coord square)
             let expectedMoves = movesToTargetSquares square piece ["a1";"b2";"c3";"d4";"e5";"f6";"g7"]
             test <@ actualMoves = expectedMoves @>
+
+    module ``When other piece in movement range`` = 
+        [<Test>]
+        let ``Cannot move to square blocked by same color piece`` () =
+            let square, piece = a White Bishop at "a1"
+            let board = boardWithPieces [square, piece; a White Knight at "c3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let wrongMove = Move.create piece (coord square) (coord "c3")
+            test <@ Set.contains wrongMove actualMoves = false  @>
+
+        [<Test>]
+        let ``Can capture an enemy piece if there are no pieces between them`` () =
+            let square, piece = a White Bishop at "a1"
+            let board = boardWithPieces [square, piece; a Black Knight at "c3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let captureMove = Move.create piece (coord square) (coord "c3")
+            test <@ Set.contains captureMove actualMoves = true  @>
+
+        [<Test>]
+        let ``Cannot capture an enemy piece if there are pieces between them`` () =
+            let square, piece = a White Bishop at "a1"
+            let board = boardWithPieces [square, piece; a White Rook at "b2"; a Black Knight at "c3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let wrongMove = Move.create piece (coord square) (coord "c3")
+            test <@ Set.contains wrongMove actualMoves = false  @>
 
 module ``Queen movement`` =
 
@@ -94,6 +144,23 @@ module ``Knight movement`` =
             let expectedMoves = movesToTargetSquares square piece ["f5";"h5";"e6";"e8";]
             test <@ actualMoves = expectedMoves @>
 
+    module ``When other piece in movement range`` =
+        [<Test>]
+        let ``Cannot move to square occupied with same color piece`` () =
+            let square, piece = a White Knight at "a1"
+            let board = boardWithPieces [square, piece; a White Bishop at "b3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let wrongMove = Move.create piece (coord square) (coord "b3")
+            test <@ Set.contains wrongMove actualMoves = false  @>
+
+        [<Test>]
+        let ``Can capture enemy piece`` () =
+            let square, piece = a White Knight at "a1"
+            let board = boardWithPieces [square, piece; a Black Bishop at "b3"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let captureMove = Move.create piece (coord square) (coord "b3")
+            test <@ Set.contains captureMove actualMoves = true  @>
+
 module ``King movement`` =
 
     module ``When board is empty`` =
@@ -110,6 +177,23 @@ module ``King movement`` =
             let actualMoves = availableMovesFromSquare (boardWithPieces [square, piece]) (coord square)
             let expectedMoves = movesToTargetSquares square piece ["h7";"g8";"g7";]
             test <@ actualMoves = expectedMoves @>
+
+    module ``When other piece in movement range`` =
+        [<Test>]
+        let ``Cannot move to square occupied with same color piece`` () =
+            let square, piece = a White King at "a1"
+            let board = boardWithPieces [square, piece; a White Bishop at "a2"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let wrongMove = Move.create piece (coord square) (coord "a2")
+            test <@ Set.contains wrongMove actualMoves = false  @>
+
+        [<Test>]
+        let ``Can capture enemy piece`` () =
+            let square, piece = a White King at "a1"
+            let board = boardWithPieces [square, piece; a Black Bishop at "a2"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let captureMove = Move.create piece (coord square) (coord "a2")
+            test <@ Set.contains captureMove actualMoves = true  @>
 
 module ``Pawn movement`` =
 
