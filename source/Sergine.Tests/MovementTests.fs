@@ -100,3 +100,22 @@ module ``Knight movement`` =
             let actualMoves = availableMovesForPiece (boardWithPieces [source, piece]) (coord source) piece
             let expectedMoves = movesToTargetSquares source piece ["f5";"h5";"e6";"e8";]
             test <@ actualMoves = expectedMoves @>
+
+module ``King movement`` =
+
+    module ``When board is empty`` =
+        [<Test>]
+        let ``Returns correct moves from e3`` () =
+
+            let source, piece = "e3", { Player = White; Kind = King }
+            let actualMoves = availableMovesForPiece (boardWithPieces [source, piece]) (coord source) piece
+            let expectedMoves = movesToTargetSquares source piece ["d2";"e2";"f2";"d3";"f3";"d4";"e4";"f4";]
+            test <@ actualMoves = expectedMoves @>
+
+        [<Test>]
+        let ``Returns correct moves from h8`` () =
+
+            let source, piece = "h8", { Player = White; Kind = King }
+            let actualMoves = availableMovesForPiece (boardWithPieces [source, piece]) (coord source) piece
+            let expectedMoves = movesToTargetSquares source piece ["h7";"g8";"g7";]
+            test <@ actualMoves = expectedMoves @>
