@@ -241,3 +241,23 @@ module ``Pawn movement`` =
             let actualMoves = availableMovesFromSquare board (coord square)
             let expectedMoves : Set<Move> = Set.empty
             test <@ actualMoves = expectedMoves @>
+
+    module ``Pawn captures`` =
+        [<Test>]
+        let ``Can capture if there is an enemy piece in target square`` () =
+            let square, piece = a White Pawn at "e3"
+            let board = boardWithPieces [square, piece; a Black Bishop at "f4"; a Black Bishop at "d4"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let expectedMoves = movesToTargetSquares square piece ["e4";"f4";"d4";]
+            test <@ actualMoves = expectedMoves @>
+
+        [<Test>]
+        let ``Cannot move to capture square if there si a piece of the same color`` () =
+            let square, piece = a White Pawn at "e3"
+            let board = boardWithPieces [square, piece; a White Bishop at "f4"; a White Bishop at "d4"]
+            let actualMoves = availableMovesFromSquare board (coord square)
+            let expectedMoves = movesToTargetSquares square piece ["e4";]
+            test <@ actualMoves = expectedMoves @>
+
+        [<Test>]
+        let ``Can capture en-passant if available`` () = ()
