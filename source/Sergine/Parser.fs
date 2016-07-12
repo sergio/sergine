@@ -71,7 +71,7 @@ let pRank : Parser<Piece option list, unit> =
         else
             reply
 
-let pboard : Parser<Piece option list list, unit> = sepBy1 pRank (pchar '/') |>> List.rev
+let pboard : Parser<Board, unit> = sepBy1 pRank (pchar '/') |>> (fun ranks -> ranks |> List.rev |> Board.create)
 
 let pipe6 p1 p2 p3 p4 p5 p6 f =
     pipe4 p1 p2 p3 (tuple3 p4 p5 p6)

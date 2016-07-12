@@ -14,8 +14,20 @@ type AvailableCastling = { Player: Player; Side: CastlingSide }
 
 type Coordinate = int * int
 
+type Board = Map<Coordinate, Piece>
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module Board =
+
+    let create (ranks:Piece option list list) : Board =
+        List.mapi (fun r rank -> List.mapi (fun f s -> ((f,r),s)) rank) ranks
+        |> List.concat
+        |> List.map (fun ((f,r),s) -> match s with | Some p -> Some ((f,r),p) | _ -> None)
+        |> List.choose (fun x -> x)
+        |> Map.ofSeq        
+
 type Position = {
-    Board: Piece option list list;
+    Board: Board;
     Turn: Player;
     Castlings: AvailableCastling list;
     EnPassantTarget: Coordinate option;
