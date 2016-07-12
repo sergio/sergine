@@ -35,6 +35,12 @@ type Position = {
     FullmoveCounter: int
 }
 
+type Move = { Piece: Piece; Source: Coordinate; Target: Coordinate }
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module Move =
+    let create piece source target = { Piece = piece; Source = source; Target = target }
+
 module Algebraic =
 
     let ofCoordinate ((f, r) : Coordinate) =
