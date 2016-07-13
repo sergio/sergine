@@ -38,6 +38,12 @@ let private isPawnInStartPosition square piece =
     | { Kind = Pawn; Player = Black } -> rank square = 6
     | _ -> false
 
+let private isLastRankForPlayer player square =
+    let rank (f,r) = r
+    match player with
+    | White -> rank square = 7
+    | Black -> rank square = 0
+
 let private availableMovesInDirection isEmptySquare square piece counter movepredicate direction : Move list =
     let generator = (fun distance -> 
         Vector2D.sum square (Vector2D.scale (distance + 1) direction))
@@ -45,7 +51,15 @@ let private availableMovesInDirection isEmptySquare square piece counter movepre
     |> counter
     |> Seq.takeWhile inBoard
     |> Seq.takeWhileInclusive isEmptySquare
-    |> Seq.map (fun target -> { Piece = piece; Source = square; Target = target })
+    |> Seq.map (fun target -> 
+        match piece.Kind with
+        | Pawn ->
+            if isLastRankForPlayer piece.Player target then 
+                Move.createWithPromotion piece square target Queen
+            else
+                Move.create piece square target
+        | _ -> Move.create piece square target 
+        )
     |> Seq.filter movepredicate
     |> List.ofSeq
 

@@ -24,7 +24,18 @@ module Board =
         |> List.concat
         |> List.map (fun ((f,r),s) -> match s with | Some p -> Some ((f,r),p) | _ -> None)
         |> List.choose (fun x -> x)
-        |> Map.ofSeq        
+        |> Map.ofSeq
+    
+    let piecesOf (board:Board) (player:Player) : (Coordinate * Piece) seq =
+        board 
+        |> Seq.filter (fun (KeyValue(coord,piece)) -> piece.Player = player)
+        |> Seq.map (fun (KeyValue(coord,piece)) -> (coord,piece))
+
+    let pieceAt (board:Board) (square:Coordinate) : Piece option =
+        if board.ContainsKey square then
+            Some board.[square]
+        else
+            None
 
 type Position = {
     Board: Board;
@@ -35,11 +46,12 @@ type Position = {
     FullmoveCounter: int
 }
 
-type Move = { Piece: Piece; Source: Coordinate; Target: Coordinate }
+type Move = { Piece: Piece; Source: Coordinate; Target: Coordinate; Promotion: PieceKind option }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Move =
-    let create piece source target = { Piece = piece; Source = source; Target = target }
+    let create piece source target = { Piece = piece; Source = source; Target = target; Promotion = None  }
+    let createWithPromotion piece source target promotion = { Piece = piece; Source = source; Target = target; Promotion = Some promotion }
 
 module Algebraic =
 
@@ -52,4 +64,9 @@ module Algebraic =
         let fileIndex = int(a.[0]) - int('a')
         let rankIndex = int(a.[1]) - int('1')
         (fileIndex, rankIndex)
-
+    
+    let ofMove (move:Move) =
+        if Option.isSome move.Promotion then
+            sprintf "%s%sq" (ofCoordinate move.Source) (ofCoordinate move.Target)
+        else
+            sprintf "%s%s" (ofCoordinate move.Source) (ofCoordinate move.Target) 

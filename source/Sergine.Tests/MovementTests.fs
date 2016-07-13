@@ -8,7 +8,7 @@ open Swensen.Unquote
 let coord = Algebraic.toCoordinate
 let alg = Algebraic.ofCoordinate
 let at = ()
-let a player kind at square = (square, { Player = player; Kind = kind})
+let a player kind _ square = (square, { Player = player; Kind = kind})
 
 let movesToTargetSquares (sourceSquare, piece) targetSquares =
     targetSquares
@@ -267,3 +267,20 @@ module ``Pawn movement`` =
             let actualMoves = availableMovesFromSquare board (Some enPassantSquare) (coord square)
             let captureMove = Move.create piece (coord square) enPassantSquare
             test <@ Set.contains captureMove actualMoves = true  @>
+
+    module ``Pawn promotion`` =
+        [<Test>]
+        let ``Move specifies the piece to which a White pawn is promoted when moving to its last rank`` () =
+            let square, piece = a White Pawn at "g7"
+            let board = boardWithPieces [square, piece]
+            let actualMoves = availableMovesFromSquare board None (coord square)
+            let expectedMoves = Set.ofList [Move.createWithPromotion piece (coord square) (coord "g8") Queen]
+            test <@ actualMoves = expectedMoves @>
+
+        [<Test>]
+        let ``Move specifies the piece to which a Black pawn is promoted when moving to its last rank`` () =
+            let square, piece = a Black Pawn at "e2"
+            let board = boardWithPieces [square, piece]
+            let actualMoves = availableMovesFromSquare board None (coord square)
+            let expectedMoves = Set.ofList [Move.createWithPromotion piece (coord square) (coord "e1") Queen]
+            test <@ actualMoves = expectedMoves @>
