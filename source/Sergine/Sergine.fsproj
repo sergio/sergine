@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="SeqExtensions.fs" />
     <Compile Include="CommonTypes.fs" />
+    <Compile Include="Algebraic.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="Movement.fs" />
     <Compile Include="Engine.fs" />
